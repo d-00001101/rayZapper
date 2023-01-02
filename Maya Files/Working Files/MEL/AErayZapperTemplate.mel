@@ -1,0 +1,159 @@
+//copyright 2009 Daniel Arzabe
+//This is the AETemplate for the rayZapperNode
+//
+//The addRayZapperMultiAttrs is a helper function that creates custom attrs
+//connected to the multi array for easy access.  These attrs can be animated
+//select rayZapperNode and run: addRayZapperOffsetAttrs
+//
+
+
+
+
+
+
+global proc AErayZapperTemplate( string $nodeName )
+{
+	// Put our attributes into a scrolled layout field
+	editorTemplate -beginScrollLayout;
+
+		// The all go into the collapsable "Parameters" section
+		editorTemplate -beginLayout "Global Parameters" -collapse false;
+		    
+		    // Add a "special" control for the collisionObjectType attribute
+	   		editorTemplate -callCustom "collisionTypeCTRL"
+	   				  "collisionTypeReplace"
+					  "collisionObjectType";
+		    
+		    editorTemplate  -addSeparator 
+		                    -ann ("If intersection is beyond the max distance,\n" +
+		                            "outputData.intersection attr will be set to false.")
+		                    -label "Max Ray Distance" -addControl "maxDistance";
+
+	  	 	
+			//add boolean controls fordistance, inheritOrientation and staticCollisionObject
+	   		editorTemplate -addControl "getIntersection";
+	   		editorTemplate -addControl "getNormal";
+	   		editorTemplate -addControl "getUVCoordinates";
+	   		editorTemplate -addControl "getDistance";
+	   		 	  
+		    
+					  
+		    editorTemplate -addSeparator;
+					  
+		    
+            
+		    editorTemplate  -ann "Determines the coordinate space in which the output data is returned."
+		                    -addControl "resultCoordinateSpace";
+		    editorTemplate  -ann "Determines which coordinate space calculates the positional offset of the pointer."
+		                    -addControl "offsetCoordinateSpace";
+		    editorTemplate  -ann "If checked off, Direction will be calculated in world space."
+		                    -label "Direction Inherits Pointer Orientation" 
+		                    -addControl "inheritOrientation";
+	   		
+	   
+
+	   
+	   				
+		editorTemplate -endLayout;
+		
+		
+		
+
+	        
+		    
+
+
+
+
+		
+
+
+		editorTemplate -beginLayout "Node Behavior" -collapse true;
+			//add boolean controls fordistance, inheritOrientation and staticCollisionObject
+	  		editorTemplate -addControl "caching";
+	   		editorTemplate -addControl "nodeState";	
+		editorTemplate -endLayout;
+
+
+		editorTemplate -addExtraControls;
+		editorTemplate -suppress "inTransform";
+		// Add a "special" control for the worldOrLocal attribute
+	   	//editorTemplate -callCustom "worldOrLocalCTRL"
+	   				  //"worldOrLocalReplace"
+					  //"worldOrLocal";
+					  
+
+	   	editorTemplate -suppress "worldOrLocal";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+global proc collisionTypeCTRL( string $attrName )
+{
+	// Maya the "quick set" control for the collisionType attribute
+	radioButtonGrp
+		-label "Collision Object Type"
+		-numberOfRadioButtons 2
+		-label1 "Nurbs Surface"
+		-data1 1
+		-label2 "Poly Mesh"
+		-data2 0
+		collisionTypeGrp;
+	connectControl collisionTypeGrp $attrName;
+}
+
+global proc collisionTypeReplace( string $attrName )
+{
+   // Install the connection between the radioButtonGrp and the
+   // actual collisionType attribute
+   connectControl collisionTypeGrp $attrName;
+}
+
+
+
+
+
+
+
+
+global proc worldOrLocalCTRL( string $attrName )
+{
+	// Maya the "quick set" control for the worldOrLocal attribute
+	radioButtonGrp
+		-label "Result Coordinate Space"
+		-numberOfRadioButtons 2
+		-label1 "World Space"
+		-data1 1
+		-label2 "Collision Obj Space"
+		-data2 0
+		-label3 "Pointer Obj Space"
+		-data3 0
+		worldOrLocalGrp;
+	connectControl worldOrLocalGrp $attrName;
+}
+
+global proc worldOrLocalReplace( string $attrName )
+{
+   // Install the connection between the radioButtonGrp and the
+   // actual worldOrLocal attribute
+   connectControl worldOrLocalGrp $attrName;
+}
+
+
+
+
+
+
+
+

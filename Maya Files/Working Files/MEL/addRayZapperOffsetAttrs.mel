@@ -1,0 +1,82 @@
+//copyright 2011 Daniel Arzabe
+//The addRayZapperOffsetAttrs is a helper function that creates custom attrs
+//connected to the multi array for easy access.  These attrs can be animated
+//select the rayZapperNode and run: addRayZapperOffsetAttrs;
+//
+
+
+
+
+proc string da_addRayZapperOffsetAttrs()
+{
+	string $nodeName;  
+	string $sel[] = `ls -sl`;  
+	int $size = size($sel);  
+	if($size)  
+	{  
+	    $nodeName = $sel[0];  
+	}  
+	else  
+	{  
+	    error "please select a rayZapper node.";   
+	}  
+	string $nodeType = `nodeType $nodeName`;  
+	if($nodeType != "rayZapper")  
+	{  
+	    error "Node selected is not of type rayZapper";  
+	} 
+	 
+	 
+	 
+	//just added ------------------
+	string $gaitKeeper[] = `listConnections -t gaitKeeper $nodeName`;
+	
+	if(`size($gaitKeeper)`)
+	{
+    	string $result = `confirmDialog -title "Confirm" -message ("Adding the custom offset attributes will overide any connections\nfrom " + $gaitKeeper[0] + " node.  Do you want to continue?")
+        -button "Yes" -button "No" -defaultButton "Yes"
+        -cancelButton "No" -dismissString "No"`;
+    
+        if ($result == "No")
+        {
+            return("Operation terminated.");
+        }
+    }
+	//just added ------------------
+	    
+	    
+	int $indeces[] = `getAttr -mi ($nodeName + ".inTransform")`;   
+	$size = size($indeces);  
+	int $i;  
+	for($i = 0; $i < $size; $i++)  
+	{  
+	    if(!`attributeExists ("offset" + $indeces[$i]) $nodeName`)  
+    	{   
+        	addAttr -ln ("offset" + $indeces[$i])  -at double3  $nodeName;  
+        	addAttr -ln ("offset" + $indeces[$i] + "X")  -at double -p ("offset" + $indeces[$i])  $nodeName;  
+        	addAttr -ln ("offset" + $indeces[$i] + "Y")  -at double -p ("offset" + $indeces[$i])  $nodeName;  
+        	addAttr -ln ("offset" + $indeces[$i] + "Z")  -at double -p ("offset" + $indeces[$i])  $nodeName;  
+        	connectAttr -f ($nodeName + ".offset" + $indeces[$i]) ($nodeName + ".inTransform[" + $indeces[$i] + "].offset");  
+        	addAttr -ln ("direction" + $indeces[$i])  -at double3  $nodeName;  
+        	addAttr -ln ("direction" + $indeces[$i] + "X")  -at double -dv  0 -p ("direction" + $indeces[$i])  $nodeName;  
+        	addAttr -ln ("direction" + $indeces[$i] + "Y")  -at double -dv -1 -p ("direction" + $indeces[$i])  $nodeName;  
+        	addAttr -ln ("direction" + $indeces[$i] + "Z")  -at double -dv 0 -p ("direction" + $indeces[$i])  $nodeName;  
+        	connectAttr -f ($nodeName + ".direction" + $indeces[$i]) ($nodeName + ".inTransform[" + $indeces[$i] + "].direction");  
+    	}  
+    	else
+    	{
+    	    if(   !`isConnected ($nodeName + ".offset" + $indeces[$i]) ($nodeName + ".inTransform[" + $indeces[$i] + "].offset")`   )
+    	    {
+    	        setAttr -l false ($nodeName + ".offset" + $indeces[$i]);
+    	        connectAttr -f ($nodeName + ".offset" + $indeces[$i]) ($nodeName + ".inTransform[" + $indeces[$i] + "].offset");
+    	    }  
+    	    
+    	    if(   !`isConnected ($nodeName + ".direction" + $indeces[$i]) ($nodeName + ".inTransform[" + $indeces[$i] + "].direction")`   )
+    	    {
+        	    connectAttr -f ($nodeName + ".direction" + $indeces[$i]) ($nodeName + ".inTransform[" + $indeces[$i] + "].direction"); 
+        	} 
+    	}
+     }	
+     
+     return ("Offset attributes added to " + $nodeName);
+}

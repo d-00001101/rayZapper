@@ -1,0 +1,90 @@
+proc string da_connectGaitKeeperToRayZapper()
+{
+	string $sel[] = `ls -sl`;
+	int $size = size($sel);
+	string $rayZapperNode;
+	string $gaitKeeper[];
+	
+	if($size == 0)
+	{
+	    error( "Please select a rayZapper node.");
+	}
+    if(size($sel) == 1)
+    { 	
+        $rayZapperNode = $sel[0];
+        if( `nodeType $rayZapperNode` != "rayZapper")
+	    { 
+	        error( "Please select a rayZapper node."); 
+	    }
+	    
+	    
+       
+        $gaitKeeper = `listConnections -t gaitKeeper $rayZapperNode`;
+	    if( size($gaitKeeper) > 0 )
+	    {
+	        error "rayZapper node is already connected to a gaitKeeper node.";
+	    }
+	    
+	    
+	    
+	    
+	    string $result;
+	    $result = `confirmDialog -t "Confirm" 
+	                -m "Connecting a gaitKeeper node to the rayZapper node\\nwill disable the offset attributes.  Do you want to continue?" 
+	                -b "Yes" 
+	                -b "No" 
+	                -db "Yes" 
+	                -cb "No" 
+	                -ds "No"`;
+
+	    if ($result == "No")
+	    {
+	        return("Operation terminated.");
+	    }
+	    
+	    
+	    
+	    $gaitKeeper[0] = `createNode gaitKeeper`;
+	    connectAttr -f time1.outTime ( $gaitKeeper[0] + ".time");
+	}
+
+	
+	int $indeces[] = `getAttr -mi ($rayZapperNode + ".inTransform")`;
+	$size = size($indeces);
+	
+	string $inConnections[];
+	
+	int $i;
+	for($i = 0; $i < $size; $i++)
+	{
+	    string $inPointers[] = `listConnections ($rayZapperNode + ".inTransform[" + $i + "].inMatrix")`;
+	    if( size($inPointers) > 0 )
+	    {
+	        string $vLocShape[] = `listRelatives -s $inPointers[0]`;
+	        connectAttr ($vLocShape[0] + ".velocity") ($gaitKeeper[0] + ".inVelocity[" + $indeces[$i] + "]");
+	        connectAttr ($vLocShape[0] + ".directionWS") ($gaitKeeper[0] + ".inDirectionWS[" + $indeces[$i] + "]");
+	        
+	        connectAttr -f ($gaitKeeper[0] + ".offset[" + $indeces[$i] + "]") ($rayZapperNode + ".inTransform[" + $indeces[$i] + "].offset");
+	        
+	        if(`attributeExists (".offset" + $indeces[$i]) $rayZapperNode`)
+	        {
+    	        if(!`getAttr -l ($rayZapperNode + ".offset" + $indeces[$i])`)
+    	        {
+        	        setAttr ($rayZapperNode + ".offset" + $indeces[$i] + "X") 0.0;
+        	        setAttr ($rayZapperNode + ".offset" + $indeces[$i] + "Y") 0.0;
+        	        setAttr ($rayZapperNode + ".offset" + $indeces[$i] + "Z") 0.0;
+    	        }
+    	        
+	            setAttr -l true ($rayZapperNode + ".offset" + $indeces[$i]);
+	        }    
+	    }
+	}
+	
+	return ("Connected " + $gaitKeeper[0] + " to " + $rayZapperNode);
+}
+
+
+
+
+
+

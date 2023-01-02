@@ -1,0 +1,82 @@
+proc connectVelocityLocatorPointerToRayZapper()
+{
+	string $sel[] = `ls -sl`;
+	//print($sel);
+	int $numSels = size($sel);
+	if($numSels == 1)
+	{
+		error( \"0 Please select velocityLocator nodes followed by one rayZapperNode.\");
+	}
+	string $rayZapperNode = $sel[$numSels - 1];
+
+	if( `nodeType $rayZapperNode` != \"rayZapper\")
+	{ error( \"1 Please select velocityLocator nodes followed by one rayZapperNode.\"); }
+
+	int $j = 0;
+	string $type;
+	for($j; $j < ($numSels - 1); $j++)
+	{
+		$type = `nodeType $sel[$j]`;
+
+		if($type == \"transform\")
+		{
+			string $children[] = `listRelatives -c $sel[$j]`;
+			int $childSize = size($children);
+			if($childSize > 0)
+			{
+				print(\"$children[\" + $j + \"] = \" + $children[0] + \"\\n\");
+
+				string $velLocShape = `nodeType $children[0]`;
+				if($velLocShape == \"velocityLocator\")
+				{
+					$sel[$j] = $children[0];	
+				}
+				else
+				{
+					error(\"3 One or more of your selections are not velocityLocators.\");
+				}
+			}
+			else
+			{
+				error( \"2 Please select velocityLocator nodes followed by one rayZapperNode.\");
+			}
+		}
+		else if($type != \"velocityLocator\")
+		{		
+			error(\"4 One or more of your selections are not velocityLocators.\");
+		}
+	}
+
+
+	
+
+	int $indeces[] = `getAttr -mi ($rayZapperNode + \".inTransform\")`;
+	int $size = size($indeces);
+
+	
+	int $nextAvailableIndex = $size;
+
+
+	if(   ($size != 0) && ($indeces[$size - 1] > $size)   )
+	{
+		$nextAvailableIndex = $indeces[$size - 1] + 1;
+	}
+
+	
+
+	$i = 0;
+	for($i; $i < ($numSels - 1); $i++)
+	{
+		connectAttr ($sel[$i] + \".pointerMatrix\") ($rayZapperNode + \".inTransform[\" + $nextAvailableIndex +\"].inMatrix\");
+
+		getAttr ($rayZapperNode + \".inTransform[\" + $nextAvailableIndex + \" ].inPosition\");
+		getAttr ($rayZapperNode + \".inTransform[\" + $nextAvailableIndex + \" ].direction\");
+
+
+		getAttr ($rayZapperNode + \".outputData[\" + $nextAvailableIndex + \" ].intersectionPosition\");
+
+		$nextAvailableIndex++;	
+	}
+
+}
+

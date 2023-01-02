@@ -1,0 +1,69 @@
+proc string da_connectCollisionObjToRayZapper()
+{
+	string $sel[] = `ls -sl`;
+	int $numSels = size($sel);
+	
+	if($numSels != 2)
+	{
+		error("Please select a NURBS surface or polygon mesh followed by a rayZapper node.");
+	}
+
+	string $rayZapperNode = $sel[1];
+
+	if( `nodeType $rayZapperNode` != "rayZapper")
+	{ error( "Please select a NURBS surface or polygon mesh followed by a rayZapper node."); }
+
+	
+	string $type = `nodeType $sel[0]`;
+	if( ($type != "transform") && ($type != "nurbsSurface") && ( $type != "mesh") )
+	{	
+		error( "Please select a NURBS surface or polygon mesh followed by a rayZapper node." ); 
+	}
+
+    string $childShape[];
+    string $parent[];
+    string $childType;
+    string $parentType;
+    
+    if($type == "transform")
+    {
+	    $childShape = `listRelatives -s $sel[0]`;
+	    $childType = `objectType $childShape[0]`;
+	    if( ($childType != "nurbsSurface") &&  ( $childType != "mesh")  ) 
+	    {	
+		    error( "Please select a NURBS surface or polygon mesh followed by a rayZapper node." ); 
+	    }
+	    else if( $childType == "nurbsSurface")
+    	{
+    		connectAttr -f ($childShape[0] + ".worldSpace[0]")  ( $rayZapperNode + ".collisionSurface");
+    		connectAttr -f ($sel[0] + ".worldMatrix[0]")  ( $rayZapperNode + ".nurbsMatrix");
+    		return ("Connected " + $sel[0] + " to " + $rayZapperNode);
+    	}
+    	else if( $childType == "mesh")
+    	{
+    		connectAttr -f ($childShape[0] + ".worldMesh[0]") ( $rayZapperNode + ".collisionMesh");
+    		connectAttr -f ($sel[0] + ".worldMatrix[0]")  ( $rayZapperNode + ".meshMatrix");
+    		return ("Connected " + $sel[0] + " to " + $rayZapperNode);
+    	}
+    }
+    else if($type == "nurbsSurface")
+    {
+        $parent = `listRelatives -p $sel[0]`;
+        print("NURBS parent = " + $parent[0] +"\n");
+        connectAttr -f ($sel[0] + ".worldSpace[0]")  ( $rayZapperNode + ".collisionSurface");
+    	connectAttr -f ($parent[0] + ".worldMatrix[0]")  ( $rayZapperNode + ".nurbsMatrix");
+    	return ("Connected " + $parent[0] + " to " + $rayZapperNode);  
+    }
+    else if($type == "mesh")
+    {
+        $parent = `listRelatives -p $sel[0]`;
+        print("MESH parent = " + $parent[0] +"\n");
+        connectAttr -f ($sel[0] + ".worldMesh[0]") ( $rayZapperNode + ".collisionMesh");
+    	connectAttr -f ($parent[0] + ".worldMatrix[0]")  ( $rayZapperNode + ".meshMatrix");
+        return ("Connected " + $parent[0] + " to " + $rayZapperNode);      
+    }
+	else
+	{
+		error("Nothing connected.");
+	}
+}

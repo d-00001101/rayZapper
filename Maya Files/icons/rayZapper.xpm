@@ -1,0 +1,31 @@
+/* XPM */
+static char *out_rayZapper2[] = {
+/* columns rows colors chars-per-pixel */
+"20 20 5 1",
+"  c black",
+". c #4AC048",
+"X c #5E9FF1",
+"o c red",
+"O c gray100",
+/* pixels */
+"OOOOOOOOOO  OOOOOOOO",
+"OOOOOOOO  X OOOOOOOO",
+"OOOOOO  XXX OOOOOOOO",
+"OOOO  XXXXX OOOOOOOO",
+"OO  XXXXXXX OOOOOOOO",
+"  XXXXXXXXX OOOOOOOO",
+" XXXXXooXXX OOOOOOOO",
+" XXXXooooXX OOOOOOOO",
+" XXXXXooXXX OOOOOOOO",
+" XXXXXXXX          O",
+" XXXXXXXX ........ O",
+" XXXXXXX  ......  OO",
+" XXXXX  O ...... OOO",
+" XXXX OOO ....... OO",
+" XX  OOOO ........ O",
+"   OOOOOO ......... ",
+"  OOOOOOO .  ....  O",
+"OOOOOOOOO  O ...  OO",
+"OOOOOOOOOOOOO .  OOO",
+"OOOOOOOOOOOOOO  OOOO"
+};

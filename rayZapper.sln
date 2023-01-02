@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rayZapper", "rayZapper\rayZapper.vcxproj", "{71C9297B-2B25-46B0-AD0F-007CCE951500}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71C9297B-2B25-46B0-AD0F-007CCE951500}.Debug|Win32.ActiveCfg = Debug|Win32
+		{71C9297B-2B25-46B0-AD0F-007CCE951500}.Debug|Win32.Build.0 = Debug|Win32
+		{71C9297B-2B25-46B0-AD0F-007CCE951500}.Debug|x64.ActiveCfg = Debug|x64
+		{71C9297B-2B25-46B0-AD0F-007CCE951500}.Debug|x64.Build.0 = Debug|x64
+		{71C9297B-2B25-46B0-AD0F-007CCE951500}.Release|Win32.ActiveCfg = Release|Win32
+		{71C9297B-2B25-46B0-AD0F-007CCE951500}.Release|Win32.Build.0 = Release|Win32
+		{71C9297B-2B25-46B0-AD0F-007CCE951500}.Release|x64.ActiveCfg = Release|x64
+		{71C9297B-2B25-46B0-AD0F-007CCE951500}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {02129B95-EE07-4A23-A7E7-1D2A3BED1016}
+	EndGlobalSection
+EndGlobal

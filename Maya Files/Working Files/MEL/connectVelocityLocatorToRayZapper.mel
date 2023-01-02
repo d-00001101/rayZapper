@@ -1,0 +1,96 @@
+//copyright 2011 Daniel Arzabe
+//This is the AETemplate for the rayZapperNode
+//
+//this procedure creates input connections to the rayZapperNode.inTransform
+//
+
+proc string da_connectVelocityLocatorPointerToRayZapper()
+{
+	string $sel[] = `ls -sl`;
+	//print($sel);
+	int $numSels = size($sel);
+	if($numSels == 1)
+	{
+		error( "Please select velocityLocator nodes followed by one rayZapperNode.");
+	}
+	string $rayZapperNode = $sel[$numSels - 1];
+
+	if( `nodeType $rayZapperNode` != "rayZapper")
+	{ error( "Please select velocityLocator nodes followed by one rayZapperNode."); }
+
+	//check to see if selections (sans the last) are velocityLocators
+	int $j = 0;
+	string $type;
+	for($j; $j < ($numSels - 1); $j++)
+	{
+		$type = `nodeType $sel[$j]`;
+		//if transform check to see if child is velocityLocator shape
+		if($type == "transform")
+		{
+			string $children[] = `listRelatives -c $sel[$j]`;
+			int $childSize = size($children);
+			if($childSize > 0)
+			{
+				print("$children[" + $j + "] = " + $children[0] + "\n");
+
+				string $velLocShape = `nodeType $children[0]`;
+				if($velLocShape == "velocityLocator")
+				{
+					$sel[$j] = $children[0];	
+				}
+				else
+				{
+					error("One or more of your selections are not velocityLocators.");
+				}
+			}
+			else
+			{
+				error( "Please select velocityLocator nodes followed by one rayZapperNode.");
+			}
+		}
+		else if($type != "velocityLocator")
+		{		
+			error("One or more of your selections are not velocityLocators.");
+		}
+	}
+
+	int $indeces[] = `getAttr -mi ($rayZapperNode + ".inTransform")`;
+	int $size = size($indeces);
+
+	
+	int $nextAvailableIndex = $size;
+
+	//check to see which index is the nextAvailable if the
+	//array is sparse
+	if(   ($size != 0) && ($indeces[$size - 1] > $size)   )
+	{
+		$nextAvailableIndex = $indeces[$size - 1] + 1;
+	}
+
+	$i = 0;
+	for($i; $i < ($numSels - 1); $i++)
+	{
+		connectAttr ($sel[$i] + ".pointerMatrix") ($rayZapperNode + ".inTransform[" + $nextAvailableIndex +"].inMatrix");
+
+		getAttr ($rayZapperNode + ".inTransform[" + $nextAvailableIndex + "].offset");
+		getAttr ($rayZapperNode + ".inTransform[" + $nextAvailableIndex + "].direction");
+
+		//initializes the output data
+		getAttr ($rayZapperNode + ".outputData[" + $nextAvailableIndex + "].intersectionPosition");
+
+		$nextAvailableIndex++;	
+	}
+
+
+
+	string $newSel[] = `ls -sl`;
+    
+    	select -r $rayZapperNode;
+    	addOffsetAttrsToRayZapper;
+    
+   	select -cl;
+    	select $newSel;
+
+	return ("Connected velocityLocator(s) to " + $rayZapperNode);
+}
+
